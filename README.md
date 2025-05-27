@@ -74,7 +74,7 @@ cryptography==41.0.7
 ## Developer
 
 **Neeraj Narwat**  
-Department of Computer Science & Engineering
+
 
 ## License
 
