@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Encryption-Decryption System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .author-info {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .encrypt-section, .decrypt-section {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .encrypt-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-right: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .decrypt-section {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .input-group textarea, .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .input-group textarea:focus, .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-loading {
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        @keyframes button-loading-spinner {
+            from { transform: rotate(0turn); }
+            to { transform: rotate(1turn); }
+        }
+
+        .output-section {
+            margin-top: 20px;
+        }
+
+        .output-box {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.9);
+            margin: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .info-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .algorithm-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .algo-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-ready { background-color: #27ae60; }
+        .status-processing { background-color: #f39c12; }
+        .status-complete { background-color: #2ecc71; }
+        .status-error { background-color: #e74c3c; }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .processing {
+            animation: pulse 1.5s infinite;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .file-input-wrapper:hover {
+            border-color: #2980b9;
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .server-status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .server-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .server-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .encrypt-section {
+                border-right: none;
+                border-bottom: 2px solid rgba(0,0,0,0.1);
+            }
+            
+            .algorithm-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Hybrid Encryption-Decryption System</h1>
+            <p>Combining 3DES & RSA Algorithms for Secure Data Transmission</p>
+            <div class="author-info">
+                <strong>Developed by: Neeraj Narwat</strong><br>
+                Department of Computer Science & Engineering
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>System Overview</h3>
+            <div id="serverStatus" class="server-status">
+                <span class="status-indicator status-processing"></span>
+                Checking server connection...
+            </div>
+            <div class="algorithm-info">
+                <div class="algo-card">
+                    <h4>🔄 3DES Algorithm</h4>
+                    <p>Fast symmetric encryption for data</p>
+                    <small>168-bit key, 64-bit blocks</small>
+                </div>
+                <div class="algo-card">
+                    <h4>🔑 RSA Algorithm</h4>
+                    <p>Secure asymmetric key exchange</p>
+                    <small>2048-bit key pair with OAEP padding</small>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p><span class="status-indicator status-ready" id="statusIndicator"></span><span id="statusText">Ready to encrypt/decrypt</span></p>
+        </div>
+
+        <div class="main-content">
+            <div class="encrypt-section">
+                <h2 class="section-title">🔒 Encryption</h2>
+                
+                <div class="input-group">
+                    <label for="plaintext">Enter text to encrypt:</label>
+                    <textarea id="plaintext" placeholder="Type your message here..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Or upload a file:</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" class="file-input" accept=".txt">
+                        <span>📁 Click to select file or drag & drop</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="generateKeys()">🔑 Generate RSA Keys</button>
+                <button class="btn" onclick="encryptData()">🔒 Encrypt Data</button>
+                
+                <div class="output-section">
+                    <label>Encrypted Data:</label>
+                    <div class="output-box" id="encryptedOutput"></div>
+                </div>
+
+                <div class="output-section">
+                    <label>Encrypted DES Key (RSA):</label>
+                    <div class="output-box" id="encryptedKeyOutput"></div>
+                </div>
+
+                <div class="output-section">
+                    <label>RSA Public Key:</label>
+                    <div class="output-box" id="publicKeyOutput"></div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="downloadEncrypted()">💾 Download Encrypted Files</button>
+            </div>
+
+            <div class="decrypt-section">
+                <h2 class="section-title">🔓 Decryption</h2>
+                
+                <div class="input-group">
+                    <label for="encryptedData">Encrypted Data:</label>
+                    <textarea id="encryptedData" placeholder="Paste encrypted data here..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="encryptedKey">Encrypted DES Key:</label>
+                    <textarea id="encryptedKey" placeholder="Paste encrypted DES key here..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="privateKey">RSA Private Key:</label>
+                    <textarea id="privateKey" placeholder="Paste RSA private key here..."></textarea>
+                </div>
+
+                <button class="btn" onclick="decryptData()">🔓 Decrypt Data</button>
+                
+                <div class="output-section">
+                    <label>Decrypted Message:</label>
+                    <div class="output-box" id="decryptedOutput"></div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="downloadDecrypted()">💾 Download Decrypted Text</button>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        
+        // Global variables
+        let rsaKeys = null;
+        let encryptedDataGlobal = null;
+        let encryptedKeyGlobal = null;
+        let serverOnline = false;
+
+        // Utility functions
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function updateStatus(status, text) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const progressFill = document.getElementById('progressFill');
+            
+            indicator.className = `status-indicator status-${status}`;
+            statusText.textContent = text;
+            
+            if (status === 'processing') {
+                indicator.classList.add('processing');
+                progressFill.style.width = '50%';
+            } else {
+                indicator.classList.remove('processing');
+                progressFill.style.width = status === 'complete' ? '100%' : '0%';
+            }
+        }
+
+        function setButtonLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.classList.add('btn-loading');
+            } else {
+                button.disabled = false;
+                button.classList.remove('btn-loading');
+            }
+        }
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    serverOnline = true;
+                    document.getElementById('serverStatus').innerHTML = 
+                        '<span class="status-indicator status-complete"></span>Backend server is online';
+                    document.getElementById('serverStatus').className = 'server-status server-online';
+                    return true;
+                }
+            } catch (error) {
+                console.error('Server check failed:', error);
+            }
+            
+            serverOnline = false;
+            document.getElementById('serverStatus').innerHTML = 
+                '<span class="status-indicator status-error"></span>Backend server is offline';
+            document.getElementById('serverStatus').className = 'server-status server-offline';
+            return false;
+        }
+
+        async function makeApiRequest(endpoint, options = {}) {
+            if (!serverOnline) {
+                throw new Error('Backend server is not available');
+            }
+
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || `HTTP ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        // Main functions
+        async function generateKeys() {
+            const button = event.target;
+            setButtonLoading(button, true);
+            updateStatus('processing', 'Generating RSA key pair...');
+
+            try {
+                const data = await makeApiRequest('/generate-keys', {
+                    method: 'POST',
+                    body: JSON.stringify({ key_size: 2048 })
+                });
+
+                rsaKeys = data.keys;
+                
+                document.getElementById('privateKey').value = rsaKeys.private_key;
+                document.getElementById('publicKeyOutput').textContent = rsaKeys.public_key;
+                
+                updateStatus('complete', 'RSA keys generated successfully!');
+                showAlert('RSA key pair generated successfully!', 'success');
+                
+                setTimeout(() => {
+                    updateStatus('ready', 'Ready to encrypt/decrypt');
+                }, 2000);
+
+            } catch (error) {
+                updateStatus('error', 'Key generation failed!');
+                showAlert(`Key generation failed: ${error.message}`, 'error');
+                console.error('Key generation error:', error);
+            } finally {
+                setButtonLoading(button, false);
+            }
+        }
+
+        async function encryptData() {
+            const button = event.target;
+            const plaintext = document.getElementById('plaintext').value.trim();
+            
+            if (!plaintext) {
+                showAlert('Please enter text to encrypt or upload a file!', 'error');
+                return;
+            }
+            
+            if (!rsaKeys) {
+                showAlert('Please generate RSA keys first!', 'error');
+                return;
+            }
+
+            setButtonLoading(button, true);
+            updateStatus('processing', 'Encrypting data...');
+
+            try {
+                const data = await makeApiRequest('/encrypt', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        plaintext: plaintext,
+                        public_key: rsaKeys.public_key
+                    })
+                });
+
+                encryptedDataGlobal = data.encrypted_data;
+                encryptedKeyGlobal = data.encrypted_key;
+                
+                document.getElementById('encryptedOutput').textContent = data.encrypted_data;
+                document.getElementById('encryptedKeyOutput').textContent = data.encrypted_key;
+                
+                updateStatus('complete', 'Data encrypted successfully!');
+                showAlert('Data encrypted successfully!', 'success');
+                
+                setTimeout(() => {
+                    updateStatus('ready', 'Ready to encrypt/decrypt');
+                }, 2000);
+
+            } catch (error) {
+                updateStatus('error', 'Encryption failed!');
+                showAlert(`Encryption failed: ${error.message}`, 'error');
+                console.error('Encryption error:', error);
+            } finally {
+                setButtonLoading(button, false);
+            }
+        }
+
+        async function decryptData() {
+            const button = event.target;
+            const encryptedDataInput = document.getElementById('encryptedData').value.trim();
+            const encryptedKeyInput = document.getElementById('encryptedKey').value.trim();
+            const privateKeyInput = document.getElementById('privateKey').value.trim();
+            
+            if (!encryptedDataInput || !encryptedKeyInput || !privateKeyInput) {
+                showAlert('Please fill in all decryption fields!', 'error');
+                return;
+            }
+
+            setButtonLoading(button, true);
+            updateStatus('processing', 'Decrypting data...');
+
+            try {
+                const data = await makeApiRequest('/decrypt', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        encrypted_data: encryptedDataInput,
+                        encrypted_key: encryptedKeyInput,
+                        private_key: privateKeyInput
+                    })
+                });
+
+                document.getElementById('decryptedOutput').textContent = data.decrypted_data;
+                
+                updateStatus('complete', 'Data decrypted successfully!');
+                showAlert('Data decrypted successfully!', 'success');
+                
+                setTimeout(() => {
+                    updateStatus('ready', 'Ready to encrypt/decrypt');
+                }, 2000);
+
+            } catch (error) {
+                updateStatus('error', 'Decryption failed!');
+                showAlert(`Decryption failed: ${error.message}`, 'error');
+                console.error('Decryption error:', error);
+            } finally {
+                setButtonLoading(button, false);
+            }
+        }
+
+        // File handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('plaintext').value = e.target.result;
+                    showAlert(`File "${file.name}" loaded successfully!`, 'success');
+                };
+                reader.onerror = function() {
+                    showAlert('Failed to read file!', 'error');
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Drag and drop functionality
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+        
+        fileInputWrapper.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#2980b9';
+            this.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+        });
+
+        fileInputWrapper.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#3498db';
+            this.style.backgroundColor = '';
+        });
+
+        fileInputWrapper.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#3498db';
+            this.style.backgroundColor = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                    document.getElementById('fileInput').files = files;
+                    document.getElementById('fileInput').dispatchEvent(new Event('change'));
+                } else {
+                    showAlert('Please upload a text (.txt) file only!', 'error');
+                }
+            }
+        });
+
+        // Download functions
+        function downloadEncrypted() {
+            if (!encryptedDataGlobal || !encryptedKeyGlobal) {
+                showAlert('No encrypted data to download!', 'error');
+                return;
+            }
+            
+            // Download encrypted data
+            downloadFile(encryptedDataGlobal, 'encrypted_data.txt', 'text/plain');
+            
+            // Download encrypted key
+            downloadFile(encryptedKeyGlobal, 'encrypted_key.txt', 'text/plain');
+            
+            // Download public key
+            if (rsaKeys) {
+                downloadFile(rsaKeys.public_key, 'public_key.pem', 'text/plain');
+            }
+            
+            showAlert('Encrypted files downloaded successfully!', 'success');
+        }
+
+        function downloadDecrypted() {
+            const decryptedText = document.getElementById('decryptedOutput').textContent.trim();
+            if (!decryptedText) {
+                showAlert('No decrypted data to download!', 'error');
+                return;
+            }
+            
+            downloadFile(decryptedText, 'decrypted_message.txt', 'text/plain');
+            showAlert('Decrypted file downloaded successfully!', 'success');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy to clipboard functionality
+        function addCopyButtons() {
+            const outputs = document.querySelectorAll('.output-box');
+            outputs.forEach(output => {
+                if (!output.querySelector('.copy-btn')) {
+                    const copyBtn = document.createElement('button');
+                    copyBtn.textContent = '📋 Copy';
+                    copyBtn.className = 'btn btn-secondary';
+                    copyBtn.style.cssText = 'font-size: 12px; padding: 5px 10px; margin-top: 10px;';
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(output.textContent).then(() => {
+                            showAlert('Copied to clipboard!', 'success');
+                        }).catch(() => {
+                            showAlert('Failed to copy to clipboard!', 'error');
+                        });
+                    };
+                    output.appendChild(copyBtn);
+                    copyBtn.classList.add('copy-btn');
+                }
+            });
+        }
+
+        // Auto-fill functionality for testing
+        function fillSampleData() {
+            document.getElementById('plaintext').value = 'This is a sample message for testing the hybrid encryption system. It contains sensitive information that needs to be protected using both DES and RSA algorithms.';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'g': // Ctrl+G for Generate Keys
+                        e.preventDefault();
+                        if (!document.querySelector('.btn-loading')) {
+                            generateKeys();
+                        }
+                        break;
+                    case 'e': // Ctrl+E for Encrypt
+                        e.preventDefault();
+                        if (!document.querySelector('.btn-loading')) {
+                            encryptData();
+                        }
+                        break;
+                    case 'd': // Ctrl+D for Decrypt
+                        e.preventDefault();
+                        if (!document.querySelector('.btn-loading')) {
+                            decryptData();
+                        }
+                        break;
+                    case 't': // Ctrl+T for Test data
+                        e.preventDefault();
+                        fillSampleData();
+                        break;
+                }
+            }
+        });
+
+        // Initialize
+        window.onload = async function() {
+            updateStatus('ready', 'Ready to encrypt/decrypt');
+            await checkServerStatus();
+            addCopyButtons();
+            
+            // Add keyboard shortcuts info
+            showAlert('Keyboard shortcuts: Ctrl+G (Generate Keys), Ctrl+E (Encrypt), Ctrl+D (Decrypt), Ctrl+T (Sample Data)', 'info');
+            
+            // Check server status periodically
+            setInterval(checkServerStatus, 30000); // Check every 30 seconds
+        };
+    </script>
+</body>
+</html>
